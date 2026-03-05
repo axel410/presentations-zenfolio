@@ -289,8 +289,8 @@
                 `;
             } else if (slide.isCheatSheet) {
                 htmlContent = `
-                    <div class="w-full h-full flex flex-col justify-center px-4 max-w-5xl mx-auto pb-16 pt-8 sm:pb-0 max-h-screen overflow-y-auto custom-scrollbar">
-                        <div class="text-center mb-8">
+                    <div class="w-full h-full flex flex-col justify-center px-4 max-w-5xl mx-auto pt-12 pb-24 sm:pb-32 max-h-screen overflow-y-auto custom-scrollbar">
+                        <div class="text-center mb-8 mt-auto">
                             <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2 text-white">${slide.title}</h2>
                             <p class="text-lg text-slate-400 font-light">${slide.subtitle}</p>
                         </div>
@@ -391,10 +391,14 @@
                         </div>
 
                         <!-- Sources Footer -->
-                        <div class="mt-6 text-center flex items-center justify-center gap-2 text-slate-500">
-                            <i data-lucide="info" class="w-4 h-4"></i>
+                        <div class="mt-6 mb-auto text-center flex items-center justify-center gap-2 text-slate-500">
+                            <i data-lucide="info" class="w-4 h-4 flex-shrink-0"></i>
                             <p class="text-xs font-light">
-                                <strong class="font-medium text-slate-400">Sources & Validation:</strong> Benchmarks synthesized from Meta/Facebook IQ Effective Frequency research, Nielsen Brand Resonance studies, Krugman's Three-Hit Theory, and Ehrenberg-Bass principles of Mental Availability.
+                                <strong class="font-medium text-slate-400">Sources & Validation:</strong> Benchmarks synthesized from 
+                                <a href="https://www.facebook.com/business/news/insights/effective-frequency-reaching-full-campaign-potential" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors">Meta/Facebook IQ Effective Frequency research</a>, 
+                                <a href="https://www.nielsen.com/wp-content/uploads/sites/2/2022/07/ROI-Report-2022-Agencies-English.pdf?ref=denkalseenstrateeg.nl" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors">Nielsen ROI & Frequency studies</a>, 
+                                <a href="https://en.wikipedia.org/wiki/Effective_frequency" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors">Krugman's Three-Hit Theory</a>, and 
+                                <a href="https://marketingscience.info/news-and-insights/how-brands-grow-the-book-that-changed-marketing" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors">Ehrenberg-Bass principles of Mental Availability</a>.
                             </p>
                         </div>
 
@@ -411,25 +415,25 @@
                 `).join('');
 
                 htmlContent = `
-                    <div class="w-full h-full flex flex-col justify-center px-4 max-w-4xl mx-auto pb-16 pt-8 sm:pb-0">
-                        <div class="text-center mb-10">
+                    <div class="w-full h-full flex flex-col justify-center px-4 max-w-4xl mx-auto pt-12 pb-24 sm:pb-32 max-h-screen overflow-y-auto custom-scrollbar">
+                        <div class="text-center mb-10 mt-auto">
                             <div class="w-20 h-20 bg-emerald-600/20 border border-emerald-500/30 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/10 rotate-3">
                                 <i data-lucide="check-square" class="w-10 h-10 text-emerald-400 -rotate-3"></i>
                             </div>
                             <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">${slide.title}</h2>
                             <p class="text-xl text-slate-400 font-light">Your summarized roadmap for implementation.</p>
                         </div>
-                        <div class="space-y-3">
+                        <div class="space-y-3 mb-auto">
                             ${listItems}
                         </div>
                     </div>
                 `;
             } else {
                 htmlContent = `
-                    <div class="w-full h-full flex flex-col justify-center px-4 pb-16 pt-8 sm:pb-0 max-h-screen overflow-y-auto custom-scrollbar">
+                    <div class="w-full h-full flex flex-col justify-center px-4 pt-12 pb-24 sm:pb-32 max-h-screen overflow-y-auto custom-scrollbar">
                         
                         <!-- Header Section -->
-                        <div class="mb-8">
+                        <div class="mb-8 mt-auto">
                             <div class="flex items-center gap-3 mb-3">
                                 <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-sm font-semibold tracking-wide uppercase">
                                     Recommendation #${slide.id}
@@ -502,7 +506,7 @@
                         </div>
 
                         <!-- Footer Metrics -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-auto">
                             <div class="glass rounded-xl p-4 flex flex-col justify-center border-l-4 border-l-slate-600">
                                 <span class="text-xs text-slate-400 uppercase tracking-wider mb-1">Impact Potential</span>
                                 <div class="font-semibold text-lg inline-flex items-center gap-2">
