@@ -143,6 +143,18 @@
                 potential: "High",
                 ease: "Easy",
                 failurePoint: "Failing to narrow the targeting sufficiently, resulting in continued broad reach with low frequency."
+            },
+            {
+                isChecklist: true,
+                title: "Action Items & Next Steps",
+                items: [
+                    "Launch a 3-month targeted YouTube video campaign to boost top-of-funnel discovery.",
+                    "Assign proxy values to conversions and shift PMax to 'Maximize Conversion Value'.",
+                    "Cap branded search spend (~$11k/mo) and reallocate to Demand Generation.",
+                    "Reduce spend on the branded keyword 'shootproof' to prioritize new awareness.",
+                    "Build dedicated landing pages tailored to specific high-intent, non-branded queries.",
+                    "Tighten Demand Gen audience targeting to achieve 3-4 monthly impressions per user."
+                ]
             }
         ];
 
@@ -181,6 +193,30 @@
                             <span class="flex items-center gap-1"><i data-lucide="user" class="w-4 h-4"></i> ${slide.author}</span>
                             <span>&bull;</span>
                             <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4"></i> ${slide.date}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (slide.isChecklist) {
+                let listItems = slide.items.map((item, i) => `
+                    <div class="glass rounded-xl p-5 flex items-start gap-4 hover:bg-slate-800/80 transition-all cursor-pointer border border-slate-700/50 hover:border-indigo-500/50 group" onclick="const cb = this.querySelector('input'); cb.checked = !cb.checked; this.classList.toggle('opacity-40', cb.checked); this.querySelector('label').classList.toggle('line-through', cb.checked);">
+                        <div class="flex-shrink-0 pt-0.5">
+                            <input type="checkbox" class="w-6 h-6 rounded border-slate-500 text-indigo-500 focus:ring-indigo-500 bg-slate-800/50 cursor-pointer pointer-events-none transition-colors" id="check-${i}">
+                        </div>
+                        <label class="text-slate-200 text-lg cursor-pointer group-hover:text-white transition-all duration-300 leading-snug">${item}</label>
+                    </div>
+                `).join('');
+
+                htmlContent = `
+                    <div class="w-full h-full flex flex-col justify-center px-4 max-w-4xl mx-auto pb-16 pt-8 sm:pb-0">
+                        <div class="text-center mb-10">
+                            <div class="w-20 h-20 bg-emerald-600/20 border border-emerald-500/30 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/10 rotate-3">
+                                <i data-lucide="check-square" class="w-10 h-10 text-emerald-400 -rotate-3"></i>
+                            </div>
+                            <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">${slide.title}</h2>
+                            <p class="text-xl text-slate-400 font-light">Your summarized roadmap for implementation.</p>
+                        </div>
+                        <div class="space-y-3">
+                            ${listItems}
                         </div>
                     </div>
                 `;
