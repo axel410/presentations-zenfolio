@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shootproof - Google Ads Audit Deck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #f8fafc;
+            overflow: hidden; /* Prevent scrolling, act like a deck */
+        }
+
+        .slide-transition {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.98) translateY(10px);
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Glassmorphism utilities */
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950">
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-slate-800 absolute top-0 z-50">
+        <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%;"></div>
+    </div>
+
+    <!-- Main Slide Container -->
+    <main id="slide-container" class="flex-grow flex items-center justify-center p-4 sm:p-8 relative slide-transition fade-in w-full max-w-7xl mx-auto">
+        <!-- Content injected via JS -->
+    </main>
+
+    <!-- Navigation Controls -->
+    <footer class="absolute bottom-0 w-full p-6 flex justify-between items-center z-40 bg-gradient-to-t from-slate-900/90 to-transparent">
+        <button id="prev-btn" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            <span class="hidden sm:inline font-medium">Previous</span>
+        </button>
+        
+        <div id="dots-container" class="flex gap-2">
+            <!-- Dots injected via JS -->
+        </div>
+
+        <button id="next-btn" class="flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-500 transition-colors px-6 py-2 rounded-lg shadow-lg shadow-indigo-500/20 disabled:opacity-30 disabled:hover:bg-indigo-600">
+            <span class="hidden sm:inline font-medium">Next</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </button>
+    </footer>
+
+    <script>
+        // Data parsed directly from the CSV and polished for presentation
+        const auditData = [
+            {
+                isTitle: true,
+                title: "Google Ads Strategic Audit",
+                subtitle: "Growth & Optimization Recommendations for Shootproof",
+                author: "Performance Review",
+                date: "March 2026"
+            },
+            {
+                id: 1,
+                type: "Awareness",
+                problem: "Shootproof currently has minimal presence on YouTube, missing out on a massive channel for top-of-funnel discovery.",
+                impact: "Significant loss of potential brand awareness and reach on the world's second-largest search engine.",
+                recommendation: "Launch a focused 3-month video campaign utilizing multiple creative assets. Target high-intent combined audiences with a goal of 4-6 monthly frequency. Alternatively, execute a Brand Lift study to gather actionable survey data while driving awareness.",
+                playbook: "Leverage combined audiences to maximize frequency. Target early-adopter photographers, entrepreneurs, or professionals aged 25-34 in the photography space (e.g., 'serious hobbyists'). Use highly memorable video assets.",
+                potential: "Mid to High",
+                ease: "Medium",
+                failurePoint: "Suboptimal targeting, ad frequency falling below 3 views per month, or unengaging creative assets."
+            },
+            {
+                id: 2,
+                type: "Conversion quality",
+                problem: "Current campaigns are optimized to maximize conversion volume rather than actual business value.",
+                impact: "The algorithm prioritizes sheer trial volume, potentially acquiring lower-quality leads instead of high-LTV customers.",
+                recommendation: "Assign accurate proxy values for core actions (e.g., 'Start Trial', 'Add Credit Card'). Update these values in Google Ads, shift Performance Max campaigns to 'Maximize Conversion Value', and allow the algorithm to recalibrate.",
+                playbook: null,
+                potential: "Mid",
+                ease: "Easy",
+                failurePoint: "Assigning inaccurate or misaligned proxy values to conversion actions."
+            },
+            {
+                id: 3,
+                type: "Awareness",
+                problem: "Over the last month, only 5.2% of the Google Ads budget was allocated to Demand Generation. Even within PMax (14% of budget), 95% of spend was heavily skewed toward paid search.",
+                impact: "An over-reliance on demand capture (95% of budget) starves the top of the funnel, leading to a steady decrease in overall brand awareness.",
+                recommendation: "Implement a hard cap on branded search campaigns (currently ~$11k/month). Reallocate these funds to Demand Generation to build top-of-funnel awareness and allow organic search to capture branded traffic naturally.",
+                playbook: null,
+                potential: "Mid",
+                ease: "Mid",
+                failurePoint: "Failing to exclude low-quality/spam placements in Demand Gen campaigns, or internal friction regarding budget reallocation."
+            },
+            {
+                id: 4,
+                type: "Cost optimization",
+                problem: "Over the past 30 days, 50% of the entire paid search budget was consumed by the branded keyword 'shootproof'.",
+                impact: "Inefficient capital allocation. We are paying for clicks that would likely be captured by organic search, cannibalizing our own traffic.",
+                recommendation: "Significantly reduce the budget for branded search campaigns and redirect those funds into scaling awareness and top-of-funnel activities.",
+                playbook: null,
+                potential: "High",
+                ease: "Mid",
+                failurePoint: "Misinterpreting a drop in 'Paid' conversions without accounting for the corresponding rise in Organic/Direct conversions."
+            },
+            {
+                id: 5,
+                type: "Landing page Experience",
+                problem: "High-intent, non-branded queries like 'how to deliver photos to clients' are currently directing traffic to a generic features page.",
+                impact: "Poor message match leads to a subpar user experience, resulting in higher bounce rates and wasted ad spend on valuable keywords.",
+                recommendation: "Develop a dedicated, targeted landing page variation specifically designed to answer the query and guide users toward a trial.",
+                playbook: null,
+                potential: "Mid",
+                ease: "Easy",
+                failurePoint: "Overly complex campaign structures making it difficult to route specific keywords to new landing pages."
+            },
+            {
+                id: 6,
+                type: "Campaign optimization",
+                problem: "Current Demand Generation campaigns are suffering from very low ad frequency (e.g., Feb 2026: 85.4K Unique Users at only 1.28 Avg frequency/user).",
+                impact: "Users are not seeing the ads often enough to build meaningful brand recall, effectively negating the campaign's primary objective.",
+                recommendation: "Without increasing the budget, significantly tighten audience targeting. Aim for a monthly frequency of 3-4 impressions per user by focusing on high-probability segments (e.g., females 18-34, entrepreneurs, in-market for photography software).",
+                playbook: null,
+                potential: "High",
+                ease: "Easy",
+                failurePoint: "Failing to narrow the targeting sufficiently, resulting in continued broad reach with low frequency."
+            }
+        ];
+
+        let currentIndex = 0;
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const dotsContainer = document.getElementById('dots-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        // Helper to format badges based on values
+        function getBadgeColor(value) {
+            const val = value.toLowerCase();
+            if (val.includes('high') || val.includes('easy')) return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+            if (val.includes('mid') || val.includes('medium')) return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+            return 'bg-slate-700 text-slate-300 border-slate-600';
+        }
+
+        function renderSlide(index) {
+            const slide = auditData[index];
+            let htmlContent = '';
+
+            if (slide.isTitle) {
+                htmlContent = `
+                    <div class="text-center max-w-3xl px-4">
+                        <div class="w-20 h-20 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center mb-8 shadow-xl shadow-indigo-500/30 rotate-3">
+                            <i data-lucide="bar-chart-3" class="w-10 h-10 text-white -rotate-3"></i>
+                        </div>
+                        <h1 class="text-5xl sm:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                            ${slide.title}
+                        </h1>
+                        <p class="text-xl sm:text-2xl text-slate-400 mb-12 font-light">
+                            ${slide.subtitle}
+                        </p>
+                        <div class="flex items-center justify-center gap-4 text-sm text-slate-500">
+                            <span class="flex items-center gap-1"><i data-lucide="user" class="w-4 h-4"></i> ${slide.author}</span>
+                            <span>&bull;</span>
+                            <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4"></i> ${slide.date}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                htmlContent = `
+                    <div class="w-full h-full flex flex-col justify-center px-4 pb-16 pt-8 sm:pb-0 max-h-screen overflow-y-auto custom-scrollbar">
+                        
+                        <!-- Header Section -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-sm font-semibold tracking-wide uppercase">
+                                    Recommendation #${slide.id}
+                                </span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-sm">
+                                    ${slide.type}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Main Content Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
+                            
+                            <!-- Left Column: Problem & Impact -->
+                            <div class="space-y-6">
+                                <div class="glass rounded-2xl p-6 sm:p-8">
+                                    <div class="flex items-start gap-4">
+                                        <div class="p-3 rounded-xl bg-rose-500/10 text-rose-400 shrink-0">
+                                            <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-white mb-2">Problem Statement</h3>
+                                            <p class="text-slate-300 leading-relaxed">${slide.problem.replace(/\n/g, '<br>')}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass rounded-2xl p-6 sm:p-8">
+                                    <div class="flex items-start gap-4">
+                                        <div class="p-3 rounded-xl bg-orange-500/10 text-orange-400 shrink-0">
+                                            <i data-lucide="trending-down" class="w-6 h-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-white mb-2">Business Impact</h3>
+                                            <p class="text-slate-300 leading-relaxed">${slide.impact}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Recommendation & Playbook -->
+                            <div class="space-y-6">
+                                <div class="glass rounded-2xl p-6 sm:p-8 border-indigo-500/30 bg-indigo-900/10">
+                                    <div class="flex items-start gap-4">
+                                        <div class="p-3 rounded-xl bg-indigo-500/20 text-indigo-400 shrink-0">
+                                            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-white mb-2">Recommendation</h3>
+                                            <p class="text-slate-200 leading-relaxed text-lg">${slide.recommendation}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                ${slide.playbook ? `
+                                <div class="glass rounded-2xl p-6 sm:p-8 border-emerald-500/20">
+                                    <div class="flex items-start gap-4">
+                                        <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
+                                            <i data-lucide="book-open" class="w-6 h-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-white mb-2">Ad Targeting Playbook</h3>
+                                            <p class="text-slate-300 leading-relaxed">${slide.playbook}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Footer Metrics -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="glass rounded-xl p-4 flex flex-col justify-center border-l-4 border-l-slate-600">
+                                <span class="text-xs text-slate-400 uppercase tracking-wider mb-1">Impact Potential</span>
+                                <div class="font-semibold text-lg inline-flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-sm border ${getBadgeColor(slide.potential)}">${slide.potential}</span>
+                                </div>
+                            </div>
+                            <div class="glass rounded-xl p-4 flex flex-col justify-center border-l-4 border-l-slate-600">
+                                <span class="text-xs text-slate-400 uppercase tracking-wider mb-1">Ease of Implementation</span>
+                                <div class="font-semibold text-lg inline-flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-sm border ${getBadgeColor(slide.ease)}">${slide.ease}</span>
+                                </div>
+                            </div>
+                            <div class="glass rounded-xl p-4 flex flex-col justify-center border-l-4 border-l-rose-500/50">
+                                <span class="text-xs text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                    <i data-lucide="shield-alert" class="w-3 h-3 text-rose-400"></i> Point of Failure
+                                </span>
+                                <p class="text-sm text-slate-300 line-clamp-2" title="${slide.failurePoint}">${slide.failurePoint}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            }
+
+            // Animate transition
+            container.classList.remove('fade-in');
+            container.classList.add('fade-out');
+            
+            setTimeout(() => {
+                container.innerHTML = htmlContent;
+                lucide.createIcons(); // Re-initialize icons
+                container.classList.remove('fade-out');
+                container.classList.add('fade-in');
+                updateControls();
+            }, 300);
+        }
+
+        function updateControls() {
+            // Update Buttons
+            prevBtn.disabled = currentIndex === 0;
+            
+            if (currentIndex === auditData.length - 1) {
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = `<span class="hidden sm:inline font-medium">Next</span><i data-lucide="arrow-right" class="w-5 h-5"></i>`;
+                lucide.createIcons();
+            }
+
+            // Update Progress Bar
+            const progress = ((currentIndex) / (auditData.length - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Update Dots
+            dotsContainer.innerHTML = '';
+            auditData.forEach((_, i) => {
+                const dot = document.createElement('button');
+                const isActive = i === currentIndex;
+                dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${isActive ? 'bg-indigo-500 w-6' : 'bg-slate-600 hover:bg-slate-400'}`;
+                dot.onclick = () => goToSlide(i);
+                dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function goToSlide(index) {
+            if (index >= 0 && index < auditData.length && index !== currentIndex) {
+                currentIndex = index;
+                renderSlide(currentIndex);
+            }
+        }
+
+        // Event Listeners
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                goToSlide(currentIndex + 1);
+            } else if (e.key === 'ArrowLeft') {
+                goToSlide(currentIndex - 1);
+            }
+        });
+
+        // Add custom scrollbar styling dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(99, 102, 241, 0.3); border-radius: 20px; }
+        `;
+        document.head.appendChild(style);
+
+        // Initial render
+        renderSlide(currentIndex);
+    </script>
+</body>
+</html>
