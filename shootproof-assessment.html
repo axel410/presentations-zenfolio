@@ -37,36 +37,72 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950">
+<body class="h-screen w-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 overflow-hidden">
 
-    <!-- Progress Bar -->
-    <div class="w-full h-1 bg-slate-800 absolute top-0 z-50">
-        <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%;"></div>
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 backdrop-blur-xl transition-opacity duration-500">
+        <div id="login-box" class="glass p-8 rounded-2xl max-w-md w-full mx-4 shadow-2xl border-indigo-500/30 flex flex-col items-center text-center transition-transform duration-300">
+            <div class="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-6 border border-indigo-500/30 shadow-lg shadow-indigo-500/20">
+                <i data-lucide="lock" class="w-8 h-8 text-indigo-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Private Presentation</h2>
+            <p class="text-slate-400 mb-6 text-sm">Please enter the password to view the audit deck.</p>
+            
+            <form id="login-form" class="w-full flex flex-col gap-4">
+                <div class="text-left">
+                    <input type="password" id="password-input" class="w-full bg-slate-800/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all" placeholder="Enter password..." autofocus>
+                    <p id="login-error" class="text-rose-400 text-sm mt-2 hidden font-medium flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i> Incorrect password
+                    </p>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 mt-2">
+                    <span>Unlock Deck</span>
+                    <i data-lucide="unlock" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- Main Slide Container -->
-    <main id="slide-container" class="flex-grow flex items-center justify-center p-4 sm:p-8 relative slide-transition fade-in w-full max-w-7xl mx-auto">
-        <!-- Content injected via JS -->
-    </main>
-
-    <!-- Navigation Controls -->
-    <footer class="absolute bottom-0 w-full p-6 flex justify-between items-center z-40 bg-gradient-to-t from-slate-900/90 to-transparent">
-        <button id="prev-btn" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400">
-            <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            <span class="hidden sm:inline font-medium">Previous</span>
-        </button>
-        
-        <div id="dots-container" class="flex gap-2">
-            <!-- Dots injected via JS -->
+    <!-- Main Deck Wrapper (Hidden until unlocked) -->
+    <div id="deck-wrapper" class="hidden opacity-0 transition-opacity duration-700 h-full w-full flex-col">
+        <!-- Progress Bar -->
+        <div class="w-full h-1 bg-slate-800 absolute top-0 z-50">
+            <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%;"></div>
         </div>
 
-        <button id="next-btn" class="flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-500 transition-colors px-6 py-2 rounded-lg shadow-lg shadow-indigo-500/20 disabled:opacity-30 disabled:hover:bg-indigo-600">
-            <span class="hidden sm:inline font-medium">Next</span>
-            <i data-lucide="arrow-right" class="w-5 h-5"></i>
-        </button>
-    </footer>
+        <!-- Main Slide Container -->
+        <main id="slide-container" class="flex-grow flex items-center justify-center p-4 sm:p-8 relative slide-transition fade-in w-full max-w-7xl mx-auto">
+            <!-- Content injected via JS -->
+        </main>
+
+        <!-- Navigation Controls -->
+        <footer class="absolute bottom-0 w-full p-6 flex justify-between items-center z-40 bg-gradient-to-t from-slate-900/90 to-transparent">
+            <button id="prev-btn" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span class="hidden sm:inline font-medium">Previous</span>
+            </button>
+            
+            <div id="dots-container" class="flex gap-2">
+                <!-- Dots injected via JS -->
+            </div>
+
+            <button id="next-btn" class="flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-500 transition-colors px-6 py-2 rounded-lg shadow-lg shadow-indigo-500/20 disabled:opacity-30 disabled:hover:bg-indigo-600">
+                <span class="hidden sm:inline font-medium">Next</span>
+                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+        </footer>
+    </div>
 
     <script>
         // Data parsed directly from the CSV and polished for presentation
@@ -159,11 +195,54 @@
         ];
 
         let currentIndex = 0;
+        let isUnlocked = false; // Prevents keyboard nav before login
+
         const container = document.getElementById('slide-container');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const dotsContainer = document.getElementById('dots-container');
         const progressBar = document.getElementById('progress-bar');
+        
+        // Login elements
+        const loginForm = document.getElementById('login-form');
+        const passwordInput = document.getElementById('password-input');
+        const loginError = document.getElementById('login-error');
+        const loginOverlay = document.getElementById('login-overlay');
+        const loginBox = document.getElementById('login-box');
+        const deckWrapper = document.getElementById('deck-wrapper');
+
+        // Login Logic
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (passwordInput.value === 'shootproof123') {
+                // Success - hide overlay, show deck
+                loginOverlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    loginOverlay.classList.add('hidden');
+                    deckWrapper.classList.remove('hidden');
+                    // Small delay to allow display:flex to apply before fading in
+                    setTimeout(() => {
+                        deckWrapper.classList.remove('opacity-0');
+                        deckWrapper.classList.add('opacity-100');
+                        isUnlocked = true;
+                    }, 50);
+                }, 500);
+            } else {
+                // Error - show message and shake box
+                loginError.classList.remove('hidden');
+                passwordInput.classList.add('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+                loginBox.classList.remove('shake');
+                void loginBox.offsetWidth; // trigger reflow to restart animation
+                loginBox.classList.add('shake');
+                passwordInput.value = ''; // clear input
+            }
+        });
+
+        // Clear error styling on typing
+        passwordInput.addEventListener('input', () => {
+            loginError.classList.add('hidden');
+            passwordInput.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+        });
 
         // Helper to format badges based on values
         function getBadgeColor(value) {
@@ -376,6 +455,8 @@
 
         // Keyboard Navigation
         document.addEventListener('keydown', (e) => {
+            if (!isUnlocked) return; // Disable keyboard nav if not logged in
+            
             if (e.key === 'ArrowRight' || e.key === 'Space') {
                 goToSlide(currentIndex + 1);
             } else if (e.key === 'ArrowLeft') {
